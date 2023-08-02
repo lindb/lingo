@@ -1,0 +1,3 @@
+otel.poc.streaming.component.source.Source=\
+  otel.poc.streaming.component.source.HttpSource,\
+  otel.poc.streaming.component.source.FileSource

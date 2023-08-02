@@ -1,0 +1,47 @@
+name: test-pipeline
+dataDir: ./
+sources:
+  trace:
+    type: otel 
+    port: 2896
+    diskQueue: trace_q
+  agg_consume:
+    type: disk_queue
+    diskQueue: trace_q
+    parallelism: 2
+  trace_storage_consume:
+    type: disk_queue
+    diskQueue: trace_q
+    parallelism: 2
+transforms:
+  trace_decode:
+    type: trace_decode
+    parallelism: 2
+    bufferSize: 128
+    inputs:
+      - agg_consume 
+  trace_storage:
+    type: trace_store
+    parallelism: 1
+    bufferSize: 128
+    inputs:
+      - trace_storage_consume 
+  ep_agg:
+    type: ep
+    parallelism: 4
+    bufferSize: 128
+    inputs:
+      - trace_decode
+    files:
+      - ot.sql
+sinks:
+  console:
+    type: console
+    inputs:
+      - ep_agg
+  lindb:
+    type: lindb 
+    endpoints: http://localhost:9000
+    database: apm
+    inputs:
+      - ep_agg

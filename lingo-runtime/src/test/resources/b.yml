@@ -1,0 +1,42 @@
+name: test-pipeline-b
+sources:
+  a_logs:
+    type: otel 
+    address: 0.0.0.0:8080
+    port: 9080
+  b_traces:
+    type: file
+transforms:
+  log_parse:
+    type: trace_parse
+    inputs:
+      - a_logs
+  trace_parse:
+    type: trace_parse
+    inputs:
+      - b_traces
+  agg:
+    type: ep_agg
+    inputs:
+      - log_parse
+      - trace_parse
+    sql:
+      - |
+        select * from cpu
+        where host='1.1.1.1'
+      - |+
+        select * from mem
+        where host='1.1.1.1'
+      - |-
+        select * from disk
+        where host='1.1.1.1'
+sinks:
+  console:
+    type: console
+    inputs:
+      - ep_agg
+  http:
+    type: http
+    inputs:
+      - ep_agg
+

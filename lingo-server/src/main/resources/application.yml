@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: lingo 
+  jackson:
+    default-property-inclusion: non_null
+  autoconfigure:
+    exclude:
+      - net.devh.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration
+   
+server:
+  port: 8082

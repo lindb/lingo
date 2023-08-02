@@ -1,0 +1,32 @@
+name: test-pipeline
+dataDir: ./
+timer:
+  interval: 1000
+sources:
+  trace:
+    type: otel 
+    port: 2891
+    diskQueue: trace_q
+  agg_consume:
+    type: disk_queue
+    diskQueue: trace_q
+transforms:
+  ep_agg:
+    type: ep
+    inputs:
+      - agg_consume 
+    sql:
+      - |
+        @Metric 
+        select 
+          name,
+          trunc_sec(startTime,10) as timestamp,
+          count(1) as count 
+        from span 
+        group by name,trunc_sec(startTime,10)
+sinks:
+  console:
+    type: console
+    inputs:
+      - ep_agg
+
