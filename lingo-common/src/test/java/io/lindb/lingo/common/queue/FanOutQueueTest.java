@@ -58,7 +58,7 @@ public class FanOutQueueTest {
 		});
 		producer.start();
 
-		Thread.sleep(60000);
+		Thread.sleep(10000);
 		running.set(false);
 	}
 }
